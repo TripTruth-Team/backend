@@ -17,6 +17,12 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+### QueryDSL (QClass) ###
+/build/generated/
+
+# QueryDSL generated sources
+src/main/generated/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -41,6 +47,9 @@ out/
 
 ## application ###
 /src/main/resources/application.yaml
+/src/main/resources/application.yml
 
 #env
 .env
+
+
