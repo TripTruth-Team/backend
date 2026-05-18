@@ -82,7 +82,7 @@ public class TripGroupService {
                 return inviteCode;
             }
         }
-        
+
         throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
     }
 }
