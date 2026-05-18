@@ -7,6 +7,8 @@ import com.likelion.tripTruth.domain.tripgroup.dto.response.TripGroupResponseDto
 import com.likelion.tripTruth.domain.tripgroup.entity.TripGroup;
 import com.likelion.tripTruth.domain.tripgroup.enums.GroupStatus;
 import com.likelion.tripTruth.domain.tripgroup.repository.TripGroupRepository;
+import com.likelion.tripTruth.global.apiPayload.code.status.ErrorStatus;
+import com.likelion.tripTruth.global.apiPayload.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class TripGroupService {
 
     private final TripGroupRepository tripGroupRepository;
+    private static final int MAX_INVITE_CODE_RETRIES = 5;
 
     /**
      * 새로운 그룹 생성 후 방장을 자동 등록
@@ -48,12 +51,10 @@ public class TripGroupService {
 
         TripGroup savedTripGroup = tripGroupRepository.save(tripGroup);
 
-
         GroupMember savedLeader = savedTripGroup.getMembers().stream()
                 .filter(member -> member.getRole() == MemberRole.LEADER)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("방장 정보를 찾을 수 없습니다."));
-
+                .orElseThrow(() -> new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR));
 
         return TripGroupResponseDto.builder()
                 .tripGroupId(savedTripGroup.getId())
@@ -69,11 +70,19 @@ public class TripGroupService {
     }
 
     /**
-     * UUID 초대 코드를 생성 메서드
+     * UUID 초대 코드를 생성, DB 중복 검사 후 12자리 코드 반환
      */
     private String generateUniqueInviteCode() {
-        return UUID.randomUUID().toString()
-                .replace("-", "")
-                .substring(0, 12);
+        for (int i = 0; i < MAX_INVITE_CODE_RETRIES; i++) {
+            String inviteCode = UUID.randomUUID().toString()
+                    .replace("-", "")
+                    .substring(0, 12);
+
+            if (!tripGroupRepository.existsByInviteCode(inviteCode)) {
+                return inviteCode;
+            }
+        }
+        
+        throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
     }
 }
