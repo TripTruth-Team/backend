@@ -1,13 +1,13 @@
 package com.likelion.tripTruth.global.apiPayload.code;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    @Setter(AccessLevel.PROTECTED)
     @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
+    @Setter(AccessLevel.PROTECTED)
     @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
