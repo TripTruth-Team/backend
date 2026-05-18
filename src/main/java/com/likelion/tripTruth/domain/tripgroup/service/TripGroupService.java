@@ -49,7 +49,10 @@ public class TripGroupService {
         TripGroup savedTripGroup = tripGroupRepository.save(tripGroup);
 
 
-        GroupMember savedLeader = savedTripGroup.getMembers().get(0);
+        GroupMember savedLeader = savedTripGroup.getMembers().stream()
+                .filter(member -> member.getRole() == MemberRole.LEADER)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("방장 정보를 찾을 수 없습니다."));
 
 
         return TripGroupResponseDto.builder()

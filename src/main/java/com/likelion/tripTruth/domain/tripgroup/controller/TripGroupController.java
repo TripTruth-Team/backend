@@ -5,6 +5,7 @@ import com.likelion.tripTruth.domain.tripgroup.dto.response.TripGroupResponseDto
 import com.likelion.tripTruth.domain.tripgroup.service.TripGroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,6 @@ public class TripGroupController {
             @Valid @RequestBody TripGroupCreateRequestDto requestDto
     ) {
         TripGroupResponseDto responseDto = tripGroupService.createTripGroup(requestDto);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 }
